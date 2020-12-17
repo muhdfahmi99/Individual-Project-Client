@@ -3,17 +3,17 @@ import threading
 import time
 
 #color codes
-OKBLUE = '\833[94m'
-OKYELLOW = '\833[93m'
-OKGREEN = '\833[92m'
-OKRED = '\833[91m'
-BOLD = '\833[1m'
-ENDC = '\833[0m'
+OKBLUE = '\033[94m'
+OKYELLOW = '\033[93m'
+OKGREEN = '\033[92m'
+OKRED = '\033[91m'
+BOLD = '\033[1m'
+ENDC = '\033[0m'
 
 HEADER = 64
 PORT = 8760
 SERVER = '192.168.208.9'
-DISCONNECT_MSG = '#DISCONNECT'
+DISCONNECT_MSG = OKRED+BOLD+'#DISCONNECT'+ENDC
 
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -38,34 +38,34 @@ def send_msg(msg):
 	client.send(send_length)
 	client.send(message)
 
-username = input("Enter your username:")
+username = input(OKBLUE+"Enter your username: "+ENDC)
 send_msg(username)
 user_result = client.recv(1024).decode(FORMAT)
 if user_result == "False":
-	print (f"User account {username} was not found")
-	print ("Creating new account with same username")
-	password = input("Enter new password: ")
+	print (OKRED+BOLD+f"User account {username} was not found"+ENDC)
+	print (OKRED+"Creating new account with same username"+ENDC)
+	password = input(OKBLUE+"Enter new password: "+ENDC)
 	password = username+"::"+password
 	send_msg(password)
 	result = client.recv(1024).decode(FORMAT)
 	if result == "True":
-		print ("User has been successfully added, Restart application")
+		print (OKGREEN+BOLD+"User has been successfully added, Restart application"+ENDC)
 		send_msg(DISCONNECT_MSG)
 	else:
-		print ("Unable to add new user, please try again later...")
+		print (OKRED+BOLD+"Unable to add new user, please try again later..."+ENDC)
 		send_msg(DISCONNECT_MSG)
 else:
-	password = input("Enter password: ")
+	password = input(OKBLUE+"Enter password: "+ENDC)
 	if user_result == password:
-		text_msg = "Log in to the chat room"
+		text_msg = OKYELLOW+"Log in to the chat room"+ENDC
 		for text in text_msg:
 			print (text, end='', flush=True)
 			time.sleep(0.04)
 		print("\n")
 		def client_main():
 			connected = True
-			send_msg("has join the chat room")
-			text_msg = "To send your message press ctrl+c"
+			send_msg(OKYELLOW+f"{username} has join the chat room"+ENDC)
+			text_msg = OKYELLOW+"To send your message press ctrl+c"+ENDC
 			for text in text_msg:
 				print (text, end='', flush=True)
 				time.sleep(0.04)
@@ -74,7 +74,7 @@ else:
 				try:
 					msg_check()
 					print ("\n")
-					message = input("MSG: ")
+					message = input(OKBLUE+"MSG: "+ENDC)
 					if message == 'disconnect':
 						connected = False
 						break
@@ -83,8 +83,8 @@ else:
 					connected = False
 					break
 			send_msg(DISCONNECT_MSG)
-		send_msg("has join the chat room")
+		send_msg(OKYELLOW+f"{username} has join the chat room"+ENDC)
 		client_main()
 	else:
-		print ("Wrong password")
+		print (OKRED+BOLD+"Wrong password"+ENDC)
 		send_msg(DISCONNECT_MSG)
